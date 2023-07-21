@@ -10,5 +10,6 @@ return \StubsGenerator\Finder::create()
             ->name('*.php')
             ->sortByName(true)
     )
+    ->notPath('webapi/v2/includes/controllers/class-wp-rest-controller.php')
     ->sortByName()
 ;

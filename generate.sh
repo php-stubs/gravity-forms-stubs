@@ -14,6 +14,9 @@ if [ ! -d vendor ]; then
     composer update
 fi
 
+# Rename one of the two rgar functions
+sed -i -e 's#^\(\s*function \)\(rgar(.*\)$#\1__\2#' source/gravityforms/xml.php
+
 "$(dirname "$0")/vendor/bin/generate-stubs" \
     --force \
     --finder=finder.php \
@@ -26,3 +29,6 @@ fi
 
 # Remove CR characters
 dos2unix -k "$FILE"
+
+# Mini CI
+php -r 'require "../wordpress-stubs/wordpress-stubs.php"; require "gravity-forms-stubs.php";'
