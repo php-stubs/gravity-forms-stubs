@@ -23,3 +23,6 @@ fi
     --interfaces \
     --traits \
     --out="$FILE"
+
+# Remove CR characters
+dos2unix -k "$FILE"
