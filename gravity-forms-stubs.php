@@ -2805,7 +2805,25 @@ namespace {
         public static function get_form_theme_slug($form)
         {
         }
-        public static function get_form($form_id, $display_title = \true, $display_description = \true, $force_display = \false, $field_values = \null, $ajax = \false, $tabindex = 0)
+        /**
+         * Get a form for display.
+         *
+         * @since unknown
+         * @since 2.7.15 Added the $form_theme and $style_settings parameters.
+         *
+         * @param int    $form_id The id of the form.
+         * @param bool   $display_title Whether to display the form title.
+         * @param bool   $display_description Whether to display the form description.
+         * @param bool   $force_display Whether to force the form to display even if it is inactive.
+         * @param array  $field_values Array of field values.
+         * @param bool   $ajax Whether ajax is enabled.
+         * @param int    $tabindex Tabindex for the form.
+         * @param string $form_theme Form theme slug.
+         * @param string $style_settings JSON-encoded style settings. Passing false will bypass the gform_default_styles filter.
+         *
+         * @return mixed|string|WP_Error
+         */
+        public static function get_form($form_id, $display_title = \true, $display_description = \true, $force_display = \false, $field_values = \null, $ajax = \false, $tabindex = 0, $form_theme = \null, $style_settings = \null)
         {
         }
         public static function footer_init_scripts($form_id)
@@ -2830,7 +2848,7 @@ namespace {
         public static function get_submit_button_class($button, $form_id)
         {
         }
-        public static function gform_footer($form, $class, $ajax, $field_values, $previous_button, $display_title, $display_description, $tabindex = 1)
+        public static function gform_footer($form, $class, $ajax, $field_values, $previous_button, $display_title, $display_description, $tabindex = 1, $theme = \null, $style_settings = \null)
         {
         }
         public static function get_max_page_number($form)
@@ -2973,6 +2991,25 @@ namespace {
         {
         }
         /**
+         * Checks for valid character encoding in the submitted value of the given field.
+         *
+         * @since 2.7.14
+         *
+         * @param array    $result   {
+         *     An array containing the validation result properties.
+         *
+         *     @type bool  $is_valid The field validation result.
+         *     @type array $message  The field validation message.
+         *  }
+         * @param mixed    $value    The field value currently being validated.
+         * @param GF_Field $field    The field currently being validated.
+         *
+         * @return array
+         */
+        public static function validate_character_encoding($result, $value, $field)
+        {
+        }
+        /**
          * Determines if the supplied field is suitable for validation.
          *
          * @since 2.4.19
@@ -3090,23 +3127,28 @@ namespace {
          * Get the various enqueueable assets for a given form.
          *
          * @since 2.5
+         * @since 2.7 Added $theme parameter
          *
          * @param array $form An array representing the current Form object.
+         * @param string $theme The theme slug for the form.
          *
          * @return GF_Asset[]
          */
-        public static function get_form_enqueue_assets($form)
+        public static function get_form_enqueue_assets($form, $theme = \null)
         {
         }
         /**
          * Enqueue the required scripts for this form.
          *
+         * @since 2.7 Added the $theme parameter
+         *
          * @param array $form An array representing the current Form object.
          * @param false $ajax Whether this is being requested via AJAX.
+         * @param string $theme The form theme slug.
          *
          * @return void
          */
-        public static function enqueue_form_scripts($form, $ajax = \false)
+        public static function enqueue_form_scripts($form, $ajax = \false, $theme = \null)
         {
         }
         /**
@@ -3412,6 +3454,43 @@ namespace {
         public static function convert_legacy_class($form, $classes)
         {
         }
+        /**
+         * Parse and validates styles from the gform_default_styles filter.
+         *
+         * @since 2.7.15
+         *
+         * @param mixed $styles Array or JSON string of styles.
+         *
+         * @return array|bool $styles
+         */
+        public static function validate_form_styles($styles)
+        {
+        }
+        /**
+         * Get the form styles from the form parameters and the global style filter.
+         *
+         * @since 2.7.15
+         *
+         * @param array|string $style_settings Array or JSON string of styles.
+         *
+         * @return array|false|string
+         */
+        public static function get_form_styles($style_settings)
+        {
+        }
+        /**
+         * Get the spacer to add to the end of the row, if needed
+         *
+         * @since 2.8.2
+         *
+         * @param array $form The current form object.
+         * @param array $field The current field object.
+         *
+         * @return string
+         */
+        public static function get_row_spacer($field, $form)
+        {
+        }
     }
     class GFFormList
     {
@@ -3547,6 +3626,36 @@ namespace {
          * @return array
          */
         public static function form_settings_fields($form)
+        {
+        }
+        /**
+         * Determine whether to show the legacy markup setting.
+         *
+         * @since 2.7.15
+         *
+         * @return bool
+         */
+        public static function show_legacy_markup_setting()
+        {
+        }
+        /**
+         * Check whether any forms on this site use legacy markup.
+         *
+         * @since 2.7.15
+         *
+         * @return bool
+         */
+        public static function legacy_is_in_use()
+        {
+        }
+        /**
+         * Get the warning for the legacy markup field.
+         *
+         * @since 2.7.15
+         *
+         * @return string
+         */
+        public static function legacy_markup_warning()
         {
         }
         // # SETTINGS RENDERER ---------------------------------------------------------------------------------------------
@@ -5492,6 +5601,10 @@ namespace {
         public static function get_sub_field($repeater_field, $field_id)
         {
         }
+        /**
+         * @deprecated 2.8 HTML5 setting was removed, and HTML5 is now always enabled.
+         * @return true
+         */
         public static function is_html5_enabled()
         {
         }
@@ -5995,7 +6108,7 @@ namespace {
          *
          * @var string $version The version number.
          */
-        public static $version = '2.7.10';
+        public static $version = '2.8.3';
         /**
          * Handles background upgrade tasks.
          *
@@ -6833,7 +6946,7 @@ namespace {
          * @uses   GFFormDisplay::get_form()
          * @uses   GFCommon::get_base_path()
          */
-        public static function get_form($form_id, $display_title = \true, $display_description = \true, $force_display = \false, $field_values = \null, $ajax = \false, $tabindex = 0)
+        public static function get_form($form_id, $display_title = \true, $display_description = \true, $force_display = \false, $field_values = \null, $ajax = \false, $tabindex = 0, $theme = \null, $style_settings = \null)
         {
         }
         /**
@@ -8330,9 +8443,22 @@ namespace {
          */
         protected $_version;
         /**
+         * The minimum Gravity Forms version required for the add-on to load.
+         *
          * @var string Gravity Forms minimum version requirement
          */
         protected $_min_gravityforms_version;
+        /**
+         * The minimum Gravity Forms version required to support all the features of an add-on.
+         *
+         * Failing to meet this version won't prevent the add-on from loading, but some features of the add-on will not work as expected or will be disabled,
+         * A notice will be displayed in the admin asking the user to upgrade to the latest Gravity Form version.
+         *
+         * @var string Gravity Forms minimum version for supporting all features.
+         *
+         * @since 2.7.12
+         */
+        protected $_min_compatible_gravityforms_version;
         /**
          * @var string URL-friendly identifier used for form settings, add-on settings, text domain localization...
          */
@@ -8342,7 +8468,7 @@ namespace {
          */
         protected $_path;
         /**
-         * @var string Full path the the plugin. Example: __FILE__
+         * @var string Full path to the plugin. Example: __FILE__
          */
         protected $_full_path;
         /**
@@ -10401,6 +10527,16 @@ namespace {
         {
         }
         /**
+         * Returns the message that will be displayed if the current version of Gravity Forms is not compatible with the add-on.
+         *
+         * Override this method to display a custom message.
+         *
+         * @since 2.7.12
+         */
+        public function compatibility_message()
+        {
+        }
+        /**
          * Formats and outs a message for the plugin row.
          *
          * Not intended to be overridden or called directly by Add-Ons.
@@ -10699,6 +10835,26 @@ namespace {
          * @return bool|mixed
          */
         public function is_gravityforms_supported($min_gravityforms_version = '')
+        {
+        }
+        /**
+         * Checks whether the current version of Gravity Forms is compatible with all features of an add-on.
+         *
+         * @since 2.7.12
+         *
+         * @param string $min_compatible_gravityforms_version The version to compare the current version with.
+         *
+         * @return bool|mixed
+         */
+        public function is_gravityforms_compatible($min_compatible_gravityforms_version = '')
+        {
+        }
+        /**
+         * Display an upgrade notice if the current version of Gravity Forms is not fully supported.
+         *
+         * @since 2.7.12
+         */
+        public function maybe_display_upgrade_notice()
         {
         }
         /**
@@ -11091,6 +11247,18 @@ namespace {
          */
         protected $_bypass_feed_delay = \false;
         /**
+         * An array of properties relating to the delayed payment functionality.
+         *
+         * Set by passing the array to `$this->add_delayed_payment_support()` in `init()`.
+         *
+         * @since 2.7.14 Was a dynamic property in earlier versions.
+         *
+         * @var array {
+         *     @type string $option_label The label to displayed for the add-ons delay checkbox, in the Post Payment Actions section of the payment add-ons feed configuration page.
+         * }
+         */
+        public $delayed_payment_integration = array();
+        /**
          * Attaches any filters or actions needed to bootstrap the addon.
          *
          * @since 2.5.2
@@ -11370,6 +11538,18 @@ namespace {
          * @param array $feed_order Array of feed IDs in desired order.
          */
         public function save_feed_order($feed_order)
+        {
+        }
+        /* Process feeds when an entry is marked as "not spam"
+         *
+         * @since  2.8.1
+         * @access public
+         *
+         * @param int $entry_id The ID of the entry being processed.
+         * @param string $status The status of the entry being processed.
+         * @param string $prev_status The previous status of the entry being processed.
+         */
+        public function process_feed_when_unspammed($entry_id, $status, $prev_status)
         {
         }
         //---------- Form Settings Pages --------------------------
@@ -14916,6 +15096,7 @@ namespace Gravity_Forms\Gravity_Forms\Async {
         const UPGRADER = 'upgrade_processor';
         const FEEDS = 'feeds_processor';
         const NOTIFICATIONS = 'notifications_processor';
+        const TELEMETRY = 'telemetry_processor';
         /**
          * The names and classes of the async (background) processors.
          *
@@ -14923,7 +15104,7 @@ namespace Gravity_Forms\Gravity_Forms\Async {
          *
          * @var string[]
          */
-        protected $processors = array(self::UPGRADER => \GF_Background_Upgrader::class, self::FEEDS => \GF_Feed_Processor::class, self::NOTIFICATIONS => \Gravity_Forms\Gravity_Forms\Async\GF_Notifications_Processor::class);
+        protected $processors = array(self::UPGRADER => \GF_Background_Upgrader::class, self::FEEDS => \GF_Feed_Processor::class, self::NOTIFICATIONS => \Gravity_Forms\Gravity_Forms\Async\GF_Notifications_Processor::class, self::TELEMETRY => \Gravity_Forms\Gravity_Forms\Telemetry\GF_Telemetry_Processor::class);
         /**
          * Initializing the processors and adding them to the container as services.
          *
@@ -17513,6 +17694,151 @@ namespace Gravity_Forms\Gravity_Forms\Duplicate_Submissions {
         }
     }
 }
+namespace Gravity_Forms\Gravity_Forms\Editor_Button {
+    /**
+     * Class GF_Editor_Service_Provider
+     *
+     * Service provider for the Embed Form Service.
+     *
+     * @package Gravity_Forms\Gravity_Forms\Editor_Button;
+     */
+    class GF_Editor_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
+    {
+        // Configs
+        const EDITOR_CONFIG = 'editor_config';
+        const ENDPOINTS_CONFIG = 'editor_endpoints_config';
+        // DOM
+        const DOM_EDITOR_BUTTON = 'dom_editor_button';
+        /**
+         * Array mapping config class names to their container ID.
+         *
+         * @since 2.8
+         *
+         * @var string[]
+         */
+        protected $configs = array(self::EDITOR_CONFIG => \Gravity_Forms\Gravity_Forms\Editor_Button\Config\GF_Editor_Config::class);
+        /**
+         * Register services to the container.
+         *
+         * @since 2.6
+         *
+         * @param GF_Service_Container $container
+         */
+        public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Initialize any actions or hooks.
+         *
+         * @since 2.6
+         *
+         * @param GF_Service_Container $container
+         *
+         * @return void
+         */
+        public function init(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Determine if the compact view is enabled for the given form and user.
+         *
+         * @since 2.8
+         *
+         * @param int $user_id The user ID.
+         * @param int $form_id The form ID.
+         *
+         * @return bool
+         */
+        public static function is_compact_view_enabled($user_id, $form_id)
+        {
+        }
+        /**
+         * Determine if the field ID view in compact view is enabled for the given form and user.
+         *
+         * @since 2.8
+         *
+         * @param int $user_id The user ID.
+         * @param int $form_id The form ID.
+         *
+         * @return bool
+         */
+        public static function is_field_id_enabled($user_id, $form_id)
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Editor_Button\Config {
+    /**
+     * Config items for the Editor Settings Button
+     *
+     * @since 2.8
+     */
+    class GF_Editor_Config extends \Gravity_Forms\Gravity_Forms\Config\GF_Config
+    {
+        protected $name = 'gform_admin_config';
+        protected $script_to_localize = 'gform_gravityforms_admin_vendors';
+        /**
+         * Determine if the config should enqueue its data.
+         *
+         * @since 2.8
+         *
+         * @return bool
+         */
+        public function should_enqueue()
+        {
+        }
+        /**
+         * Config data.
+         *
+         * @return array[]
+         */
+        public function data()
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Editor_Button\Dom {
+    /**
+     * Handle outputting the Embed Button in the UI.
+     *
+     * @since 2.6
+     *
+     * @package Gravity_Forms\Gravity_Forms\Embed_Form\Dom
+     */
+    class GF_Editor_Button
+    {
+        /**
+         * Output the HTML for the Embed Button.
+         */
+        public function output_button()
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Editor_Button\Endpoints {
+    /**
+     * AJAX Endpoint for saving the compact view settings.
+     *
+     * @since   2.8
+     *
+     * @package Gravity_Forms\Gravity_Forms\Editor_Button\Endpoints
+     */
+    class GF_Editor_Save_Editor_Settings
+    {
+        // Strings
+        const ACTION_NAME = 'gf_save_editor_settings';
+        /**
+         * Handle the AJAX request.
+         *
+         * @since 2.8
+         *
+         * @return void
+         */
+        public function handle()
+        {
+        }
+    }
+}
 namespace Gravity_Forms\Gravity_Forms\Embed_Form {
     /**
      * Class GF_Embed_Service_Provider
@@ -18431,6 +18757,18 @@ namespace {
          * @return string
          */
         public function get_field_label_tag($form)
+        {
+        }
+        /**
+         * Checks if any messages should be displayed in the sidebar for this field, and returns the HTML markup for them.
+         *
+         * Messages could be warning messages, that will be displayed in error style, or notification messages, that will be displayed in info style.
+         *
+         * @since 2.8.0
+         *
+         * @return array[]|array|string An array of arrays that lists all the messages and their types, an array that contains one message and type, or a warning message string that defaults to the warning type.
+         */
+        public function get_field_sidebar_messages()
         {
         }
         /**
@@ -19720,6 +20058,16 @@ namespace {
         {
         }
         function get_form_editor_field_settings()
+        {
+        }
+        /**
+         * Returns the warning message to be displayed in the form editor sidebar.
+         *
+         * @since 2.8
+         *
+         * @return string
+         */
+        public function get_field_sidebar_messages()
         {
         }
         /**
@@ -21387,6 +21735,18 @@ namespace {
          * @var bool
          */
         protected $_supports_state_validation = \true;
+        /**
+         * Returns the field's form editor icon.
+         *
+         * This could be an icon url or a gform-icon class.
+         *
+         * @since 2.8
+         *
+         * @return string
+         */
+        public function get_form_editor_field_icon()
+        {
+        }
         function get_form_editor_field_settings()
         {
         }
@@ -22768,7 +23128,6 @@ namespace {
          * @uses    GF_Field::is_form_editor()
          * @uses    GF_Field_Phone::$failed_validation
          * @uses    GF_Field_Phone::get_phone_format()
-         * @uses    GFFormsModel::is_html5_enabled()
          * @uses    GF_Field::get_field_placeholder_attribute()
          * @uses    GF_Field_Phone::$isRequired
          * @uses    GF_Field::get_tabindex()
@@ -23445,6 +23804,18 @@ namespace {
     class GF_Field_Price extends \GF_Field
     {
         public $type = 'price';
+        /**
+         * Returns the field's form editor icon.
+         *
+         * This could be an icon url or a gform-icon class.
+         *
+         * @since 2.8
+         *
+         * @return string
+         */
+        public function get_form_editor_field_icon()
+        {
+        }
         function get_form_editor_field_settings()
         {
         }
@@ -24299,6 +24670,18 @@ namespace {
          * @var bool
          */
         protected $_supports_state_validation = \true;
+        /**
+         * Returns the field's form editor icon.
+         *
+         * This could be an icon url or a gform-icon class.
+         *
+         * @since 2.8
+         *
+         * @return string
+         */
+        public function get_form_editor_field_icon()
+        {
+        }
         function get_form_editor_field_settings()
         {
         }
@@ -24362,6 +24745,18 @@ namespace {
          * @var bool
          */
         protected $_supports_state_validation = \true;
+        /**
+         * Returns the field's form editor icon.
+         *
+         * This could be an icon url or a gform-icon class.
+         *
+         * @since 2.8
+         *
+         * @return string
+         */
+        public function get_form_editor_field_icon()
+        {
+        }
         function get_form_editor_field_settings()
         {
         }
@@ -24830,7 +25225,6 @@ namespace {
          * @uses    GFFormsModel::get_input()
          * @uses    GF_Field::get_input_placeholder_attribute()
          * @uses    GF_Field::get_tabindex()
-         * @uses    GFFormsModel::is_html5_enabled()
          *
          * @param array      $form  The Form Object.
          * @param string     $value The field default value. Defaults to empty string.
@@ -25030,6 +25424,29 @@ namespace {
         public function get_value_merge_tag($value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br)
         {
         }
+        /**
+         * Validates the field value.
+         *
+         * @since 2.8.2
+         *
+         * @param string $value The submitted value.
+         * @param array  $form  The form currently being validated.
+         *
+         * @return void
+         */
+        public function validate($value, $form)
+        {
+        }
+        /**
+         * Sanitizes the field properties.
+         *
+         * @since 2.8.2
+         *
+         * @return void
+         */
+        public function sanitize_settings()
+        {
+        }
     }
     class GF_Field_Website extends \GF_Field
     {
@@ -25144,10 +25561,13 @@ namespace Gravity_Forms\Gravity_Forms\Form_Display\Block_Styles {
         public function __construct($defaults_map)
         {
         }
+        public function defaults_map($form)
+        {
+        }
         public function handle()
         {
         }
-        public function form_css_properties($form_id, $settings, $block_settings)
+        public function form_css_properties($form_id, $settings, $block_settings, $form = array())
         {
         }
         public function styles($form, $ajax, $settings, $block_settings)
@@ -25281,7 +25701,7 @@ namespace Gravity_Forms\Gravity_Forms\Form_Display {
         {
         }
         /**
-         * Initiailize any actions or hooks.
+         * Initialize any actions or hooks.
          *
          * @since
          *
@@ -30735,6 +31155,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Config {
     }
 }
 namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
+    #[\AllowDynamicProperties]
     class Base implements \ArrayAccess
     {
         /**
@@ -30838,6 +31259,142 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var Settings
          */
         public $settings;
+        /**
+         * Field id.
+         *
+         * @since 2.5
+         *
+         * @var int
+         */
+        public $id;
+        /**
+         * Field callback.
+         *
+         * @since 2.5
+         *
+         * @var callable
+         */
+        protected $callback;
+        /**
+         * Field feedback callback.
+         *
+         * @since 2.5
+         *
+         * @var callable
+         */
+        protected $feedback_callback;
+        /**
+         * Field hidden property.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        public $hidden;
+        /**
+         * Field html.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        public $html;
+        /**
+         * Field description.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        protected $description;
+        /**
+         * Field tooltip.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        protected $tooltip;
+        /**
+         * Field content after input.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        protected $after_input;
+        /**
+         * Field choices.
+         *
+         * @since 2.5
+         *
+         * @var array
+         */
+        protected $choices;
+        /**
+         * Field taxonomy.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        protected $taxonomy;
+        /**
+         * Field value.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        protected $value;
+        /**
+         * Field placeholder
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        protected $placeholder;
+        /**
+         * Checkbox input attributes
+         *
+         * @since 2.5
+         *
+         * @var array
+         */
+        protected $checkbox;
+        /**
+         * Select input attributes
+         *
+         * @since 2.5
+         *
+         * @var array
+         */
+        protected $select;
+        /**
+         * Whether field is readonly
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        public $readonly;
+        /**
+         * Field error message.
+         *
+         * @since 2.5
+         *
+         * @var string|false
+         */
+        protected $error = false;
+        /**
+         * Field onchange attribute.
+         *
+         * @since 2.5
+         *
+         * @var string|false
+         */
+        public $onchange;
         /**
          * Current function rendering field.
          *
@@ -31253,6 +31810,14 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          */
         public $image_select = false;
         /**
+         * Whether the inputs should be horizontal.
+         *
+         * @since 2.5
+         *
+         * @var bool
+         */
+        public $horizontal;
+        /**
          * Initialize field.
          *
          * @since 2.5
@@ -31346,7 +31911,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          */
         public $inputs = array();
         /**
-         * Initialize Checbox and Select field.
+         * Initialize Checkbox and Select field.
          *
          * @since 2.5
          *
@@ -31432,6 +31997,11 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var string
          */
         public $data_format = 'bool';
+        public $onclick;
+        protected $no_choices;
+        protected $horizontal;
+        protected $enabledLabel;
+        protected $onkeypress;
         // # RENDER METHODS ------------------------------------------------------------------------------------------------
         /**
          * Render field.
@@ -31504,6 +32074,8 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
         public $type = 'conditional_logic';
         public $checkbox = array('label' => 'Enable Condition', 'hidden' => false);
         public $object_type;
+        protected $checkbox_label;
+        protected $instructions;
         /**
          * Initialize Conditional Logic field.
          *
@@ -31621,6 +32193,10 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var array
          */
         public $value_field = array('title' => '', 'placeholder' => '', 'allow_custom' => true);
+        protected $excluded_field_types;
+        protected $required_field_types;
+        protected $merge_tags;
+        protected $field_map;
         /**
          * Initialize Generic Map field.
          *
@@ -31830,6 +32406,15 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          */
         public $enhanced_ui = false;
         /**
+         * Field content after select.
+         *
+         * @since 2.5
+         *
+         * @var string
+         */
+        public $after_select;
+        public $disabled;
+        /**
          * Register scripts to enqueue when displaying field.
          *
          * @since 2.5
@@ -31903,6 +32488,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var array
          */
         public $args = array();
+        protected $fields_callback;
         /**
          * Initialize Field Select field.
          *
@@ -32180,6 +32766,8 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var string
          */
         public $input_type = 'text';
+        protected $step;
+        protected $append;
         // # RENDER METHODS ------------------------------------------------------------------------------------------------
         /**
          * Render field.
@@ -32229,6 +32817,22 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var bool
          */
         public $use_editor = false;
+        /**
+         * Number of rows.
+         *
+         * @since 2.5
+         *
+         * @var int
+         */
+        public $rows;
+        /**
+         * Editor height.
+         *
+         * @since 2.5
+         *
+         * @var int
+         */
+        public $editor_height;
         /**
          * Initialize Textarea field.
          *
@@ -32304,6 +32908,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var string
          */
         public $toggle_label;
+        protected $disabled;
         // # RENDER METHODS ------------------------------------------------------------------------------------------------
         /**
          * Render field.
@@ -33265,6 +33870,216 @@ namespace {
         }
     }
 }
+namespace Gravity_Forms\Gravity_Forms\Telemetry {
+    /**
+     * Class GF_Telemetry_Data
+     *
+     * Base class for telemetry data.
+     *
+     * @package Gravity_Forms\Gravity_Forms\Telemetry
+     */
+    abstract class GF_Telemetry_Data
+    {
+        /**
+         * @var array $data Data to be sent.
+         */
+        public $data = array();
+        /**
+         * @var string $key Unique identifier for this data object.
+         */
+        public $key = '';
+        /**
+         * @var bool $data_collection Whether data collection is allowed.
+         */
+        public $data_collection = '';
+        /**
+         * @var string
+         */
+        const TELEMETRY_ENDPOINT = 'https://in.gravity.io/';
+        public function __construct()
+        {
+        }
+        /**
+         * Determine if the user has allowed data collection.
+         *
+         * @since 2.8.3
+         *
+         * @return false|mixed|null
+         */
+        public function is_data_collection_allowed()
+        {
+        }
+        /**
+         * Get the current telemetry data.
+         *
+         * @since 2.8
+         *
+         * @return array
+         */
+        public static function get_data()
+        {
+        }
+        /**
+         * Save telemetry data.
+         *
+         * @since 2.8
+         *
+         * @param GF_Telemetry_Data $data The data to save.
+         *
+         * @return void
+         */
+        public static function save_data(\Gravity_Forms\Gravity_Forms\Telemetry\GF_Telemetry_Data $data)
+        {
+        }
+        /**
+         * Take a snapshot of the current site data.
+         *
+         * @since 2.8
+         *
+         * @return void
+         */
+        public static function take_snapshot()
+        {
+        }
+        /**
+         * Send data to the telemetry endpoint.
+         *
+         * @since 2.8
+         *
+         * @param array  $entries The data to send.
+         *
+         * @return array|WP_Error
+         */
+        public static function send_data($entries)
+        {
+        }
+    }
+    /**
+     * GF_Telemetry_Processor Class.
+     */
+    class GF_Telemetry_Processor extends \GF_Background_Process
+    {
+        /**
+         * @var string
+         */
+        protected $action = 'gf_telemetry_processor';
+        /**
+         * Task
+         *
+         * Process a single batch of telemetry data.
+         *
+         * @param mixed $batch
+         * @return mixed
+         */
+        protected function task($batch)
+        {
+        }
+    }
+    /**
+     * Class GF_Telemetry_Service_Provider
+     *
+     * Service provider for the telemetry Service.
+     *
+     * @package Gravity_Forms\Gravity_Forms\Telemetry;
+     */
+    class GF_Telemetry_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
+    {
+        const TELEMETRY_SCHEDULED_TASK = 'gravityforms_telemetry_dispatcher';
+        const BATCH_SIZE = 10;
+        /**
+         * Register services to the container.
+         *
+         * @since
+         *
+         * @param GF_Service_Container $container
+         */
+        public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Initialize the scheduler.
+         *
+         * @since
+         *
+         * @param GF_Service_Container $container
+         *
+         * @return void
+         */
+        public function init(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Enqueue batches of telemetry events to be processed in the background.
+         *
+         * @since
+         *
+         * @return void
+         */
+        public function enqueue_telemetry_batches()
+        {
+        }
+    }
+    class GF_Telemetry_Snapshot_Data extends \Gravity_Forms\Gravity_Forms\Telemetry\GF_Telemetry_Data
+    {
+        /**
+         * @var string $key Identifier for this data object.
+         */
+        public $key = 'snapshot';
+        public function __construct()
+        {
+        }
+        /**
+         * Get additional callbacks that return data to be included in the telemetry snapshot.
+         *
+         * @since 2.8
+         *
+         * @return array
+         */
+        public function get_callbacks()
+        {
+        }
+        /**
+         * Get basic site info for telemetry.
+         *
+         * @since 2.8
+         *
+         * @return array
+         */
+        public function get_site_basic_info()
+        {
+        }
+        /**
+         * Collect the data from the Gravity Forms settings page
+         *
+         * @since 2.8.3
+         *
+         * @return array
+         */
+        public function get_gf_settings()
+        {
+        }
+        /**
+         * Count the number of forms with legacy mode enabled.
+         *
+         * @since 2.8.3
+         *
+         * @return array
+         */
+        public function get_legacy_forms()
+        {
+        }
+        /**
+         * Stores the response from the version.php endpoint, to be used by the license service.
+         *
+         * @since 2.8
+         *
+         * @param array $response Raw response from the API endpoint.
+         */
+        public static function data_sent($response)
+        {
+        }
+    }
+}
 namespace Gravity_Forms\Gravity_Forms\Template_Library {
     /**
      * Class GF_Template_Library_Service_Provider
@@ -34183,7 +34998,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\API\Fluent\Layers {
         public function overriden_fields()
         {
         }
-        public function form_css_properties($form_id = 0, $settings = array(), $block_settings = array())
+        public function form_css_properties($form_id = 0, $settings = array(), $block_settings = array(), $form = array())
         {
         }
         public function scripts($form, $ajax, $settings, $block_settings = array())
@@ -34602,6 +35417,18 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Engines\Output_Engi
         {
         }
         public function get_block_settings($form_id, $instance = 0)
+        {
+        }
+        /**
+         * Parse the settings from the style filter or shortcode attributes.
+         *
+         * @since 2.7.15
+         *
+         * @param $form
+         *
+         * @return array
+         */
+        public function parse_form_style($form)
         {
         }
     }
@@ -38695,6 +39522,16 @@ namespace {
         public static function gravityforms_settings_page()
         {
         }
+        /**
+         * Determine whether Orbital should be the default theme.
+         *
+         * @since 2.7.15
+         *
+         * @return bool
+         */
+        public static function is_orbital_default()
+        {
+        }
         public static function license_key_details_callback()
         {
         }
@@ -39026,6 +39863,8 @@ namespace {
      *
      * Should be used to insert a Gravity Form from code.
      *
+     * @since 2.7.15 Added $form_theme and $style_settings parameters.
+     *
      * @param string $id The form ID
      * @param bool $display_title If the form title should be displayed in the form. Defaults to true.
      * @param bool $display_description If the form description should be displayed in the form. Defaults to true.
@@ -39034,10 +39873,12 @@ namespace {
      * @param bool $ajax If submission should be processed via AJAX. Defaults to false.
      * @param int $tabindex Starting tabindex. Defaults to 0.
      * @param bool $echo If the field should be echoed.  Defaults to true.
+     * @param string $form_theme Form theme slug.
+     * @param string $style_settings JSON-encoded style settings. Passing false will bypass the gform_default_styles filter.
      *
      * @return string|void
      */
-    function gravity_form($id, $display_title = \true, $display_description = \true, $display_inactive = \false, $field_values = \null, $ajax = \false, $tabindex = 0, $echo = \true)
+    function gravity_form($id, $display_title = \true, $display_description = \true, $display_inactive = \false, $field_values = \null, $ajax = \false, $tabindex = 0, $echo = \true, $form_theme = \null, $style_settings = \null)
     {
     }
     /**
