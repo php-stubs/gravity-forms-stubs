@@ -31,4 +31,4 @@ sed -i -e 's#^\(\s*function \)\(rgar(.*\)$#\1__\2#' source/gravityforms/xml.php
 dos2unix -k "$FILE"
 
 # Mini CI
-php -r 'require "../wordpress-stubs/wordpress-stubs.php"; require "gravity-forms-stubs.php";'
+composer run test
