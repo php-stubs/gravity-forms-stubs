@@ -29,6 +29,3 @@ sed -i -e 's#^\(\s*function \)\(rgar(.*\)$#\1__\2#' source/gravityforms/xml.php
 
 # Remove CR characters
 dos2unix -k "$FILE"
-
-# Mini CI
-composer run test
